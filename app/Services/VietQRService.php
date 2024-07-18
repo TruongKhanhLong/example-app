@@ -1,26 +1,19 @@
-<?php 
+<?php
 namespace App\Services;
 
-use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-
 class VietQRService
 {
-    protected $client;
-
-    public function __construct()
+    public function fetchBusinessData($taxCode)
     {
-        $this->client = new Client();
-    }
+        $response = Http::get("https://api.vietqr.io/v2/business/$taxCode");
+        Log::info($response);
 
-    public function getBusinessData($taxCode)
-    {
-        try {
-            $response = $this->client->get("https://api.vietqr.io/v2/business/{$taxCode}");
-            return json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            Log::error('Error fetching business data: ' . $e->getMessage());
-            return null;
+        if ($response->successful()) {
+            return $response->json();
         }
+
+        return null;
     }
 }

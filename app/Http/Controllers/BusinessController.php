@@ -1,10 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Business;
 use App\Services\VietQRService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Log;
 class BusinessController extends Controller
 {
     protected $vietQRService;
@@ -14,25 +13,16 @@ class BusinessController extends Controller
         $this->vietQRService = $vietQRService;
     }
 
-    public function fetchAndSaveBusiness(Request $request, $taxCode)
+    public function fetchBusiness($taxCode)
     {
-        $data = $this->vietQRService->getBusinessData($taxCode);
+        Log::info(123);
+        $businessData = $this->vietQRService->fetchBusinessData($taxCode);
 
-        if ($data) {
-            Business::updateOrCreate(
-                ['tax_code' => $data['taxCode']],
-                [
-                    'name' => $data['name'],
-                    'address' => $data['address'],
-                    'representative' => $data['representative'],
-                    'email' => $data['email'] ?? null,
-                    'phone' => $data['phone'] ?? null,
-                ]
-            );
-
-            return response()->json(['message' => 'Business data saved successfully'], 200);
+        if ($businessData) {
+            return response()->json($businessData);
+        } else {
+            return response()->json(['message' => 'Business data could not be fetched'], 404);
         }
-
-        return response()->json(['message' => 'Failed to fetch business data'], 500);
     }
 }
+

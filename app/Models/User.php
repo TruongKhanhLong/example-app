@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    protected const STATUS_INACTIVE = 0;
+    protected const STATUS_ACTIVE = 1;
     use HasFactory, Notifiable;
 
     /**
@@ -44,4 +46,5 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 }
